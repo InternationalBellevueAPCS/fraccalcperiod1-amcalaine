@@ -1,3 +1,4 @@
+import java.util.*;
 public class FracCalc {
 
     /**
@@ -8,20 +9,71 @@ public class FracCalc {
     {
         // TODO: Read the input from the user and call produceAnswer with an equation
         // Checkpoint 1: Create a Scanner, read one line of input, pass that input to produceAnswer, print the result.
+    	Scanner console = new Scanner(System.in);
+    	console.useDelimiter("\n");
+    	System.out.print("Please input a calculation: ");
+    	String userInput = console.next();
+    	String output = produceAnswer(userInput);
+    	System.out.println(output);
         // Checkpoint 2: Accept user input multiple times.
+    	
     }
     
     /**
      * produceAnswer - This function takes a String 'input' and produces the result.
-     * @param input - A fraction string that needs to be evaluated.  For your program, this will be the user input.
+     * @param userInput - A fraction string that needs to be evaluated.  For your program, this will be the user input.
      *      Example: input ==> "1/2 + 3/4"
      * @return the result of the fraction after it has been calculated.
      *      Example: return ==> "1_1/4"
      */
-    public static String produceAnswer(String input)
+    public static String produceAnswer(String userInput)
     { 
         // TODO: Implement this function to produce the solution to the input
         // Checkpoint 1: Return the second operand.  Example "4/5 * 1_2/4" returns "1_2/4".
+    	//First Operand:
+    	String operand1 = ""; 
+    	int counter = 0;
+    	for (int i = 0; i < userInput.length(); i++) {
+    		String s = "";
+    		s += userInput.charAt(i);
+    		if (s.equals(" ")) {
+    			counter += 1;
+    			break;
+    		}
+    		else {
+    			operand1 += s;
+    			counter += 1;
+    		}
+    	}
+    	//Operator:
+    	String operator = "";
+    	for (int i = counter; i < userInput.length(); i++) {
+    		String s = "";
+    		s += userInput.charAt(i);
+    		if (s.equals(" ")) {
+    			counter += 1;
+    			break;
+    		}
+    		else {
+    			operator += s;
+        		counter += 1;
+    		}
+    	}
+    	//Second Operand:
+    	String operand2 = "";
+    	for (int i = counter; i < userInput.length(); i++) {
+    		String s = "";
+    		s += userInput.charAt(i);
+    		if (s.equals(" ")) {
+    			counter += 1;
+    			break;
+    		}
+    		else {
+    			operand2 += s;
+        		counter += 1;
+    		}
+    	}
+    	//Return Second Operand:
         // Checkpoint 2: Return the second operand as a string representing each part.
         //               Example "4/5 * 1_2/4" returns "whole:1 numerator:2 denominator:4".
         // Checkpoint 3: Evaluate the formula and return the result as a fraction.
@@ -30,7 +82,7 @@ public class FracCalc {
         // Final project: All answers must be reduced.
         //               Example "4/5 * 1_2/4" returns "1_1/5".
         
-        return "";
+        return operand2;
     }
 
     // TODO: Fill in the space below with helper methods
