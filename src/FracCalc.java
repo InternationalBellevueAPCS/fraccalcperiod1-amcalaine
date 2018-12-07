@@ -11,11 +11,15 @@ public class FracCalc {
         // Checkpoint 1: Create a Scanner, read one line of input, pass that input to produceAnswer, print the result.
     	Scanner console = new Scanner(System.in);
     	console.useDelimiter("\n");
-    	System.out.print("Please input a calculation: ");
-    	String userInput = console.next();
-    	String output = produceAnswer(userInput);
-    	System.out.println(output);
         // Checkpoint 2: Accept user input multiple times.
+        System.out.println("Please input a calculation: (type quit to exit)");
+        String userInput = console.nextLine();
+        while(!(userInput.equals("quit"))) {
+        	System.out.println(produceAnswer(userInput));
+        	System.out.println("Please input a calculation: (type quit to exit)");
+            userInput = console.nextLine();
+        }	
+        		
     	
     }
     
@@ -76,15 +80,57 @@ public class FracCalc {
     	//Return Second Operand:
         // Checkpoint 2: Return the second operand as a string representing each part.
         //               Example "4/5 * 1_2/4" returns "whole:1 numerator:2 denominator:4".
+    	String whole = op2Whole(operand2);
+    	String numerator = op2Numerator(operand2);
+    	String denominator = op2Denominator(operand2);
+    	String strAnswer = "whole:" + whole + " numerator:" + numerator + " denominator:" + denominator;
         // Checkpoint 3: Evaluate the formula and return the result as a fraction.
         //               Example "4/5 * 1_2/4" returns "6/5".
         //               Note: Answer does not need to be reduced, but it must be correct.
         // Final project: All answers must be reduced.
         //               Example "4/5 * 1_2/4" returns "1_1/5".
         
-        return operand2;
+        return strAnswer;
     }
-
+    
+    public static String op2Whole(String str) {
+		//mixed number
+		if (str.contains("_")) {
+			return str.substring(0, str.indexOf('_'));
+		}
+		//fraction
+		else if (str.contains("/")) {
+			return "0";
+		}
+		//whole number
+		else {
+			return str;
+		}
+    }
+    public static String op2Numerator(String str) {
+    	//mixed number
+    	if (str.contains("_")) {
+    		return str.substring(str.indexOf('_')+1, str.indexOf('/'));
+    	}
+    	//fraction
+    	else if (str.contains("/")) {
+    		return str.substring(0, str.indexOf('/'));
+    	}
+    	//whole number
+    	else {
+    		return "0";
+    	}
+    }
+    public static String op2Denominator(String str) {
+    	//if slash
+    	if (str.contains("/")) {
+    		return str.substring(str.indexOf("/")+1);
+    	}
+    	//no slash
+    	else {
+    		return "1";
+    	}
+    }
     // TODO: Fill in the space below with helper methods
     
     /**
