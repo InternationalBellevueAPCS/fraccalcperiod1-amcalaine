@@ -80,21 +80,93 @@ public class FracCalc {
     	//Return Second Operand:
         // Checkpoint 2: Return the second operand as a string representing each part.
         //               Example "4/5 * 1_2/4" returns "whole:1 numerator:2 denominator:4".
-    	String whole = op2Whole(operand2);
-    	String numerator = op2Numerator(operand2);
-    	String denominator = op2Denominator(operand2);
-    	String strAnswer = "whole:" + whole + " numerator:" + numerator + " denominator:" + denominator;
+    	String whole2 = opWhole(operand2);
+    	String numerator2 = opNumerator(operand2);
+    	String denominator2 = opDenominator(operand2);
+    	String strAnswer = "whole:" + whole2 + " numerator:" + numerator2 + " denominator:" + denominator2;
         // Checkpoint 3: Evaluate the formula and return the result as a fraction.
         //               Example "4/5 * 1_2/4" returns "6/5".
+    	int intFormWhole2 = Integer.parseInt(whole2);
+    	int intFormNumerator2 = Integer.parseInt(numerator2);
+    	int intFormDenominator2 = Integer.parseInt(denominator2);
+    	if (intFormWhole2 < 0) {
+    		intFormNumerator2 *= -1;
+    	}
+    	
+    	//Operand1
+    	String whole1 = opWhole(operand1);
+    	String numerator1 = opNumerator(operand1);
+    	String denominator1 = opDenominator(operand1);
+    	int intFormWhole1 = Integer.parseInt(whole1);
+    	int intFormNumerator1 = Integer.parseInt(numerator1);
+    	int intFormDenominator1 = Integer.parseInt(denominator1);
+    	if (intFormWhole1 < 0) {
+    		intFormNumerator1 *= -1;
+    	}
+    	//Calculation
+    	String answer = "";
+    	if (operator.equals("+")) {
+    		int whole = intFormWhole1 + intFormWhole2;
+    		if (intFormDenominator1 != intFormDenominator2) {
+    			//need temporary variable
+    			int temp = intFormDenominator1;
+    			intFormDenominator1 *= intFormDenominator2;
+    			intFormNumerator1 *= intFormDenominator2;
+    			intFormDenominator2 *= temp;
+    			intFormNumerator2 *= temp;
+    		}
+    		int numerator = intFormNumerator1 + intFormNumerator2;
+    		if (numerator < 0) {
+    			numerator *= -1;
+    		}
+    		int denominator = intFormDenominator1;
+    		answer = (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    		return answer;
+    	}
+    	else if (operator.equals("-")) {
+    		int whole = intFormWhole1 - intFormWhole2;
+    		if (intFormDenominator1 != intFormDenominator2) {
+    			//need temporary variable
+    			int temp = intFormDenominator1;
+    			intFormDenominator1 *= intFormDenominator2;
+    			intFormNumerator1 *= intFormDenominator2;
+    			intFormDenominator2 *= temp;
+    			intFormNumerator2 *= temp;
+    		}
+    		int numerator = intFormNumerator1 - intFormNumerator2;
+    		if (whole < 0) {
+    			if (numerator < 0) {
+    				numerator *= -1;
+    			}
+    		}
+    		int denominator = intFormDenominator1;
+    		answer = (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    		return answer;
+    	}
+    	else if (operator.equals("*")) {
+    		int improper1 = intFormWhole1 * intFormDenominator1 + intFormNumerator1;
+    		int improper2 = intFormWhole2 * intFormDenominator2+ intFormNumerator2;
+    		int numerator = improper1 * improper2;
+    		int denominator = intFormDenominator1 * intFormDenominator2;
+    		answer = (Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    		return answer;
+    	}
+    	else {
+    		//Must be division
+    		int improper1 = intFormWhole1 * intFormDenominator1 + intFormNumerator1;
+    		int improper2 = intFormWhole2 * intFormDenominator2 + intFormNumerator2;
+    		int numerator = improper1 * intFormDenominator2;
+    		int denominator = intFormDenominator1 * improper2;
+    		answer = (Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    		return answer;
+    	}
         //               Note: Answer does not need to be reduced, but it must be correct.
         // Final project: All answers must be reduced.
         //               Example "4/5 * 1_2/4" returns "1_1/5".
-        
-        return strAnswer;
     }
     
-    public static String op2Whole(String str) {
-		//mixed number
+    public static String opWhole(String str) {
+    	//mixed number
 		if (str.contains("_")) {
 			return str.substring(0, str.indexOf('_'));
 		}
@@ -107,7 +179,7 @@ public class FracCalc {
 			return str;
 		}
     }
-    public static String op2Numerator(String str) {
+    public static String opNumerator(String str) {
     	//mixed number
     	if (str.contains("_")) {
     		return str.substring(str.indexOf('_')+1, str.indexOf('/'));
@@ -121,7 +193,7 @@ public class FracCalc {
     		return "0";
     	}
     }
-    public static String op2Denominator(String str) {
+    public static String opDenominator(String str) {
     	//if slash
     	if (str.contains("/")) {
     		return str.substring(str.indexOf("/")+1);
