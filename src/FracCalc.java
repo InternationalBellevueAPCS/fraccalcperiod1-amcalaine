@@ -34,7 +34,7 @@ public class FracCalc {
     { 
         // TODO: Implement this function to produce the solution to the input
         // Checkpoint 1: Return the second operand.  Example "4/5 * 1_2/4" returns "1_2/4".
-    	//First Operand:
+    	//Separate First Operand:
     	String operand1 = ""; 
     	int counter = 0;
     	for (int i = 0; i < userInput.length(); i++) {
@@ -49,7 +49,7 @@ public class FracCalc {
     			counter += 1;
     		}
     	}
-    	//Operator:
+    	//Separate Operator:
     	String operator = "";
     	for (int i = counter; i < userInput.length(); i++) {
     		String s = "";
@@ -63,7 +63,7 @@ public class FracCalc {
         		counter += 1;
     		}
     	}
-    	//Second Operand:
+    	//Separate Second Operand:
     	String operand2 = "";
     	for (int i = counter; i < userInput.length(); i++) {
     		String s = "";
@@ -77,15 +77,15 @@ public class FracCalc {
         		counter += 1;
     		}
     	}
-    	//Return Second Operand:
         // Checkpoint 2: Return the second operand as a string representing each part.
         //               Example "4/5 * 1_2/4" returns "whole:1 numerator:2 denominator:4".
+    	//OBTAIN EACH PART OF OPERAND 2
     	String whole2 = opWhole(operand2);
     	String numerator2 = opNumerator(operand2);
     	String denominator2 = opDenominator(operand2);
-    	String strAnswer = "whole:" + whole2 + " numerator:" + numerator2 + " denominator:" + denominator2;
         // Checkpoint 3: Evaluate the formula and return the result as a fraction.
         //               Example "4/5 * 1_2/4" returns "6/5".
+    	//PARSE EACH PART OF OPERAND 2
     	int intFormWhole2 = Integer.parseInt(whole2);
     	int intFormNumerator2 = Integer.parseInt(numerator2);
     	int intFormDenominator2 = Integer.parseInt(denominator2);
@@ -93,18 +93,20 @@ public class FracCalc {
     		intFormNumerator2 *= -1;
     	}
     	
-    	//Operand1
+    	//OBTAIN EACH PART OF OPERAND 1
     	String whole1 = opWhole(operand1);
     	String numerator1 = opNumerator(operand1);
     	String denominator1 = opDenominator(operand1);
+    	//PARSE EACH PART OF OPERAND 1
     	int intFormWhole1 = Integer.parseInt(whole1);
     	int intFormNumerator1 = Integer.parseInt(numerator1);
     	int intFormDenominator1 = Integer.parseInt(denominator1);
     	if (intFormWhole1 < 0) {
     		intFormNumerator1 *= -1;
     	}
-    	//Calculation
+    	//CALCULATION
     	String answer = "";
+    	//IF ADDITION:
     	if (operator.equals("+")) {
     		int whole = intFormWhole1 + intFormWhole2;
     		if (intFormDenominator1 != intFormDenominator2) {
@@ -115,14 +117,49 @@ public class FracCalc {
     			intFormDenominator2 *= temp;
     			intFormNumerator2 *= temp;
     		}
-    		int numerator = intFormNumerator1 + intFormNumerator2;
-    		if (numerator < 0) {
+    		int numerator = 0;
+    		numerator = intFormNumerator1 + intFormNumerator2;
+    		int denominator = intFormDenominator1;
+    		if (denominator < 0) {
+    			denominator *= -1;
     			numerator *= -1;
     		}
-    		int denominator = intFormDenominator1;
-    		answer = (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
-    		return answer;
+    		int divisor = greatestCommonDivisor(numerator, denominator);
+    		numerator /= divisor;
+    		denominator /= divisor;
+    		if (numerator < 0) {
+    			numerator = Math.abs(numerator);
+    			int newWhole = numerator / denominator;
+    			newWhole *= -1;
+    			whole += newWhole;
+    			numerator %= denominator;
+    			if (whole == 0) {
+    				return Integer.toString(0);
+    			}
+    			answer += (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    			return answer;
+    		}
+    		else if (whole == 0 && (numerator / denominator == 0)) {
+    			return (Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    		}
+    		
+    		else if (numerator == 0) {
+    			answer += (Integer.toString(whole));
+    			return answer;
+    		}
+    		else {
+    			whole = whole + (numerator / denominator);
+    			numerator = numerator % denominator;
+    			if (numerator == 0) {
+    				answer = Integer.toString(whole);
+    			}
+    			else {
+    				answer = (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    			}
+    			return answer;
+    		}	
     	}
+    	//IF SUBTRACTION
     	else if (operator.equals("-")) {
     		int whole = intFormWhole1 - intFormWhole2;
     		if (intFormDenominator1 != intFormDenominator2) {
@@ -140,31 +177,113 @@ public class FracCalc {
     			}
     		}
     		int denominator = intFormDenominator1;
-    		answer = (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
-    		return answer;
+    		int divisor = greatestCommonDivisor(numerator, denominator);
+    		numerator /= divisor;
+    		denominator /= divisor;
+    		if (numerator < 0 && denominator < 0) {
+    			numerator = Math.abs(numerator);
+    			int newWhole = numerator / denominator;
+    			newWhole *= -1;
+    			whole += newWhole;
+    		}
+    		if (whole < 0 && (numerator > denominator)) {
+    			whole = whole += (-1*(numerator /denominator));
+    			numerator = numerator % denominator;
+    			answer += (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    			return answer;
+    		}
+    		else if (numerator > denominator) {
+    			whole = whole + (numerator / denominator);
+    			numerator = numerator % denominator;
+    			answer += (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    			return answer;
+    		}
+    		else if (numerator == 0) {
+    			answer += (Integer.toString(whole));
+    			return answer;
+    		}
+    		else if (whole == 0 || numerator < 0) {
+    			return (Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    		}
+    		else {
+    			answer += (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    			return answer;
+    		}
     	}
+    	//IF MULTIPLICATION
     	else if (operator.equals("*")) {
     		int improper1 = intFormWhole1 * intFormDenominator1 + intFormNumerator1;
     		int improper2 = intFormWhole2 * intFormDenominator2+ intFormNumerator2;
     		int numerator = improper1 * improper2;
     		int denominator = intFormDenominator1 * intFormDenominator2;
-    		answer = (Integer.toString(numerator) + "/" + Integer.toString(denominator));
-    		return answer;
+    		int divisor = greatestCommonDivisor(numerator, denominator);
+    		numerator /= divisor;
+    		denominator /= divisor;
+    		int whole = 0;
+    		if ((numerator / denominator > 0) && (numerator % denominator == 0)) {
+    			return Integer.toString(whole + (numerator / denominator));
+    		}
+    		if (numerator == 0 && whole == 0) {
+    			return Integer.toString(0);
+    		}
+    		else {
+    			whole = whole + (numerator / denominator);
+    			if (whole == 0) {
+    				return (Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    			}
+    			numerator = numerator % denominator;
+    			if (numerator < 0) {
+    				numerator *= -1;
+    			}
+    			if (numerator == 0) {
+    				answer += Integer.toString(whole);
+    			}
+    			else {
+    				answer += (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    			}
+    			return answer;
+    		}
     	}
+    	//IF DIVISION
     	else {
-    		//Must be division
     		int improper1 = intFormWhole1 * intFormDenominator1 + intFormNumerator1;
     		int improper2 = intFormWhole2 * intFormDenominator2 + intFormNumerator2;
     		int numerator = improper1 * intFormDenominator2;
     		int denominator = intFormDenominator1 * improper2;
-    		answer = (Integer.toString(numerator) + "/" + Integer.toString(denominator));
-    		return answer;
+    		int divisor = greatestCommonDivisor(numerator, denominator);
+    		numerator /= divisor;
+    		denominator /= divisor;
+    		int whole = numerator / denominator;
+    		numerator = numerator % denominator;
+    		if (numerator < 0 && denominator < 0) {
+    			numerator *= -1;
+    			denominator *= -1;
+    		}
+    		if ((numerator / denominator ) > 1) {
+    			whole = whole + (numerator / denominator);
+    			numerator = numerator % denominator;
+    		}
+    		numerator = Math.abs(numerator);
+    		denominator = Math.abs(denominator);
+    		if (numerator == 0) {
+    			answer += (Integer.toString(whole));
+    		}
+    		else {
+    			if (whole == 0) {
+    				answer += Integer.toString(numerator) + "/" + Integer.toString(denominator);
+    			}
+    			else {
+    				answer += (Integer.toString(whole) + "_" + Integer.toString(numerator) + "/" + Integer.toString(denominator));
+    			}
+    		}
+    	return answer;
     	}
         //               Note: Answer does not need to be reduced, but it must be correct.
         // Final project: All answers must be reduced.
         //               Example "4/5 * 1_2/4" returns "1_1/5".
-    }
-    
+    	
+    }   
+    //RETRIEVE WHOLE NUMBER FROM INPUT
     public static String opWhole(String str) {
     	//mixed number
 		if (str.contains("_")) {
@@ -179,6 +298,7 @@ public class FracCalc {
 			return str;
 		}
     }
+    //RETRIEVE NUMERATOR FROM INPUT
     public static String opNumerator(String str) {
     	//mixed number
     	if (str.contains("_")) {
@@ -193,6 +313,7 @@ public class FracCalc {
     		return "0";
     	}
     }
+    //RETRIEVE DENOMINATOR FROM INPUT
     public static String opDenominator(String str) {
     	//if slash
     	if (str.contains("/")) {
@@ -204,7 +325,6 @@ public class FracCalc {
     	}
     }
     // TODO: Fill in the space below with helper methods
-    
     /**
      * greatestCommonDivisor - Find the largest integer that evenly divides two integers.
      *      Use this helper method in the Final Checkpoint to reduce fractions.
@@ -226,7 +346,6 @@ public class FracCalc {
         }
         return max;
     }
-    
     /**
      * leastCommonMultiple - Find the smallest integer that can be evenly divided by two integers.
      *      Use this helper method in Checkpoint 3 to evaluate expressions.
